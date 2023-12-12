@@ -134,6 +134,21 @@ class PipeNetwork:
             return 0, 1, (hl, wl+1)
         return None
     
+    def travel_to(self, loc, next_loc):
+        hi, wi = loc
+        u, d, l, r = self.pipes[hi][wi].u, self.pipes[hi][wi].d, self.pipes[hi][wi].l, self.pipes[hi][wi].r
+        hi, wi = next_loc
+        nu, nd, nl, nr = self.pipes[hi][wi].u, self.pipes[hi][wi].d, self.pipes[hi][wi].l, self.pipes[hi][wi].r
+        if u and nd:
+            return -1, 0
+        if d and nu:
+            return 1, 0
+        if l and nr:
+            return 0, -1
+        if r and nl:
+            return 0, 1
+        return 0, 0
+    
     def scanning(self, stloc):
         dist_map = [[None for _ in range(self.w)] for _ in range(self.h)]
         hl, wl = stloc
@@ -184,7 +199,6 @@ class PipeNetwork:
         loc = stloc
         
         next_loc = self.travel_next_one_direction(loc, visited_locs)
-        print(next_loc)
         pv, ph = 0, 0
         while next_loc is not None:
             hi, wi = loc
@@ -201,15 +215,32 @@ class PipeNetwork:
             pv, ph = v, h
             next_loc = self.travel_next_one_direction(loc, visited_locs)
         
-        hi, wi = loc
-        vert_map[hi][wi] = v
-        horz_map[hi][wi] = h
+        # hi, wi = loc
+        # if v:
+        #     vert_map[hi][wi] = v
+        # elif h:
+        #     horz_map[hi][wi] = h
         
-        hi, wi = stloc
-        if v:
+        # pv, ph = v, h
+        v, h = self.travel_to(loc, stloc)
+        hi, wi = loc
+        if v:    
             vert_map[hi][wi] = v
+            if ph:
+                horz_map[hi][wi] = ph
         elif h:
             horz_map[hi][wi] = h
+            if pv:
+                vert_map[hi][wi] = pv
+        
+        pv, ph = v, h
+        hi, wi = stloc
+        if vert_map[hi][wi]:    
+            if ph:
+                horz_map[hi][wi] = ph
+        elif horz_map[hi][wi]:
+            if pv:
+                vert_map[hi][wi] = pv
         
         return vert_map, horz_map
         

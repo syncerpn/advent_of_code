@@ -58,6 +58,33 @@ class PipeNetwork:
         
     def check_around(self, loc):
         hl, wl = loc
+        su = self.pipes[hl][wl].u
+        sd = self.pipes[hl][wl].d
+        sl = self.pipes[hl][wl].l
+        sr = self.pipes[hl][wl].r
+        
+        u = False
+        d = False
+        l = False
+        r = False
+        
+        if su and hl > 0:
+            u = self.pipes[hl-1][wl].d
+    
+        if sd and hl < self.h-1:
+            d = self.pipes[hl+1][wl].u
+                
+        if sl and wl > 0:
+            l = self.pipes[hl][wl-1].r
+    
+        if sr and wl < self.w-1:
+            r = self.pipes[hl][wl+1].l
+        
+        return u, d, l, r
+    
+    def _guess_stloc(self):
+        hl, wl = self.stloc
+        
         u = False
         d = False
         l = False
@@ -75,11 +102,7 @@ class PipeNetwork:
         if wl < self.w-1:
             r = self.pipes[hl][wl+1].l
         
-        return u, d, l, r
-    
-    def _guess_stloc(self):
-        hl, wl = self.stloc
-        self.pipes[hl][wl].u, self.pipes[hl][wl].d, self.pipes[hl][wl].l, self.pipes[hl][wl].r = self.check_around(self.stloc)
+        self.pipes[hl][wl].u, self.pipes[hl][wl].d, self.pipes[hl][wl].l, self.pipes[hl][wl].r = u, d, l, r
     
     def travel_next(self, loc):
         u, d, l, r = self.check_around(loc)
@@ -96,6 +119,20 @@ class PipeNetwork:
             locs_end.append((hl, wl+1))
         
         return locs_end
+    
+    def travel_next_one_direction(self, loc, visited_locs):
+        u, d, l, r = self.check_around(loc)
+        
+        hl, wl = loc
+        if u and (hl-1, wl) not in visited_locs:
+            return -1, 0, (hl-1, wl)
+        if d and (hl+1, wl) not in visited_locs:
+            return 1, 0, (hl+1, wl)
+        if l and (hl, wl-1) not in visited_locs:
+            return 0, -1, (hl, wl-1)
+        if r and (hl, wl+1) not in visited_locs:
+            return 0, 1, (hl, wl+1)
+        return None
     
     def scanning(self, stloc):
         dist_map = [[None for _ in range(self.w)] for _ in range(self.h)]
@@ -137,6 +174,45 @@ class PipeNetwork:
         
         
         return dist_map, max_dist
+    
+    def scanning_one_direction(self, stloc):
+        vert_map = [[0 for _ in range(self.w)] for _ in range(self.h)]
+        horz_map = [[0 for _ in range(self.w)] for _ in range(self.h)]
+        
+        visited_locs = []
+        
+        loc = stloc
+        
+        next_loc = self.travel_next_one_direction(loc, visited_locs)
+        print(next_loc)
+        pv, ph = 0, 0
+        while next_loc is not None:
+            hi, wi = loc
+            visited_locs.append(loc)
+            v, h, loc = next_loc
+            if v:    
+                vert_map[hi][wi] = v
+                if ph:
+                    horz_map[hi][wi] = ph
+            elif h:
+                horz_map[hi][wi] = h
+                if pv:
+                    vert_map[hi][wi] = pv
+            pv, ph = v, h
+            next_loc = self.travel_next_one_direction(loc, visited_locs)
+        
+        hi, wi = loc
+        vert_map[hi][wi] = v
+        horz_map[hi][wi] = h
+        
+        hi, wi = stloc
+        if v:
+            vert_map[hi][wi] = v
+        elif h:
+            horz_map[hi][wi] = h
+        
+        return vert_map, horz_map
+        
 
 pipe_network = PipeNetwork(data)
 dist_map, max_dist = pipe_network.scanning(pipe_network.stloc)
@@ -149,3 +225,29 @@ for di, d in enumerate((dist_map)):
     for i, c in enumerate(d):
         if c is not None:
             wall[di][i] = 1
+
+vert_map, horz_map = pipe_network.scanning_one_direction(pipe_network.stloc)
+import numpy as np
+vert_map, horz_map = np.array(vert_map), np.array(horz_map)
+
+io_map = np.zeros((pipe_network.h, pipe_network.w))
+
+def winding_check(point, vert_map, horz_map):
+    hi, wi = point
+    if horz_map[0:hi, wi].sum() == 0:
+        return 1
+    if horz_map[hi+1:, wi].sum() == 0:
+        return 1
+    if vert_map[hi, 0:wi].sum() == 0:
+        return 1
+    if vert_map[hi, wi+1:].sum() == 0:
+        return 1
+    return -1
+
+for hi in range(pipe_network.h):
+    for wi in range(pipe_network.w):
+        if vert_map[hi, wi] != 0 or horz_map[hi, wi] != 0:
+            continue
+        io_map[hi, wi] = winding_check((hi, wi), vert_map, horz_map)
+
+print(np.int32(io_map == -1).sum())

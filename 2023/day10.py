@@ -137,15 +137,15 @@ class PipeNetwork:
     def travel_to(self, loc, next_loc):
         hi, wi = loc
         u, d, l, r = self.pipes[hi][wi].u, self.pipes[hi][wi].d, self.pipes[hi][wi].l, self.pipes[hi][wi].r
-        hi, wi = next_loc
-        nu, nd, nl, nr = self.pipes[hi][wi].u, self.pipes[hi][wi].d, self.pipes[hi][wi].l, self.pipes[hi][wi].r
-        if u and nd:
+        nhi, nwi = next_loc
+        nu, nd, nl, nr = self.pipes[nhi][nwi].u, self.pipes[nhi][nwi].d, self.pipes[nhi][nwi].l, self.pipes[nhi][nwi].r
+        if u and nd and nhi == hi-1:
             return -1, 0
-        if d and nu:
+        if d and nu and nhi == hi+1:
             return 1, 0
-        if l and nr:
+        if l and nr and nwi == wi-1:
             return 0, -1
-        if r and nl:
+        if r and nl and nwi == wi+1:
             return 0, 1
         return 0, 0
     
@@ -215,13 +215,6 @@ class PipeNetwork:
             pv, ph = v, h
             next_loc = self.travel_next_one_direction(loc, visited_locs)
         
-        # hi, wi = loc
-        # if v:
-        #     vert_map[hi][wi] = v
-        # elif h:
-        #     horz_map[hi][wi] = h
-        
-        # pv, ph = v, h
         v, h = self.travel_to(loc, stloc)
         hi, wi = loc
         if v:    
@@ -251,12 +244,6 @@ print(max_dist)
 
 
 #part2
-wall = [[0 for i in d] for d in dist_map]
-for di, d in enumerate((dist_map)):
-    for i, c in enumerate(d):
-        if c is not None:
-            wall[di][i] = 1
-
 vert_map, horz_map = pipe_network.scanning_one_direction(pipe_network.stloc)
 import numpy as np
 vert_map, horz_map = np.array(vert_map), np.array(horz_map)

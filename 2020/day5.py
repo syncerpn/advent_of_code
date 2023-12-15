@@ -13,6 +13,8 @@ with open('day5_input') as f:
     data = f.readlines()
 
 data = [line.strip('\n') for line in data]
+
+#part1
 bdata = []
 max_seat_id = 0
 min_seat_id = 1000000
@@ -31,7 +33,10 @@ for entry in data:
         min_seat_id = seat_id
     
     occupied[str(seat_id)] = 1
-    
+
+print(max_seat_id)
+
+#part2
 for i in range(min_seat_id, max_seat_id+1):
     if occupied.get(str(i)) == None:
         print(i)

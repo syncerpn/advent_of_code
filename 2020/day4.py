@@ -35,8 +35,10 @@ for passport in book:
             count -= 1
             break
 
-import re
+print(count)
+
 ## part 2
+import re
 count = len(book)
 require_list = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']
 for passport in book:
@@ -88,10 +90,8 @@ for passport in book:
                     count -= 1
                     break
                 else:
-                    print(value)
+                    # print(value)
+                    pass
                     
                 
-                    
-                
-
-    
+print(count)

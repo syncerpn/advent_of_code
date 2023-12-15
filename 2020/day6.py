@@ -24,7 +24,8 @@ for i in data:
         count += len(set(''.join(group)))
         group = []
 
-#part 1        
+print(count)
+#part 2        
 count = 0
 group = {}
 first = True
@@ -39,4 +40,5 @@ for i in data:
         first = True
         count += len(group)
         group = {}
-        
+
+print(count)

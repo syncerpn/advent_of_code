@@ -34,6 +34,7 @@ for i in range(n-k):
         sus_list += [s]
         break
 
+print(sus)
 #part2
 sus = sus_list[0]
 

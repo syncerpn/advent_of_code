@@ -33,6 +33,6 @@ for d in data:
     me = min(xe,ye)
     
     if ms <= me:
-        print(d)
+        # print(d)
         count += 1
 print(count)

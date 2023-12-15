@@ -43,7 +43,7 @@ for d in data:
             group = [group[0]] + [d] + [group[-1]]
                 
     if len(group) == 3:
-        print(group)
+        # print(group)
         gmin = group[0]
         for c in gmin:
             if (c in group[1]) and (c in group[2]):

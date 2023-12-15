@@ -27,7 +27,7 @@ while y < n:
     y += 1
     x += 3
     x = x % l
-    
+print(count)
 ## part 2
 l = len(data[0])
 n = len(data)
@@ -93,3 +93,4 @@ while y < n:
     x = x % l
 
 mul *= count
+print(mul)

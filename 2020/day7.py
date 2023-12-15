@@ -53,22 +53,23 @@ for entry in data:
     bags.append(new_bag)
 
 #part 1
-# target = ['shiny gold']
-# levels = [0 for bag in bags]
-# old_sum = 0
-# cur_level = 1
-# while (sum(levels) != old_sum) or (old_sum == 0):    
-#     next_target = []
-#     old_sum = sum(levels)
-#     for i, bag in enumerate(bags):
-#         if levels[i] == 0:
-#             if set(target).intersection(set(bag.contents)):
-#                 levels[i] = cur_level
-#                 next_target.append(bag.look)
-#     target = next_target
-#     cur_level += 1
+target = ['shiny gold']
+levels = [0 for bag in bags]
+old_sum = 0
+cur_level = 1
+while (sum(levels) != old_sum) or (old_sum == 0):    
+    next_target = []
+    old_sum = sum(levels)
+    for i, bag in enumerate(bags):
+        if levels[i] == 0:
+            if set(target).intersection(set(bag.contents)):
+                levels[i] = cur_level
+                next_target.append(bag.look)
+    target = next_target
+    cur_level += 1
     
-# count = sum([1 for i in levels if i != 0])
-
+count = sum([1 for i in levels if i != 0])
+print(count)
 #part 2
 count_2 = count_num_bag_inside_single_target(bags, 'shiny gold') - 1 #minus the top one
+print(count_2)

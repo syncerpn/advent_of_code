@@ -47,17 +47,17 @@ while next_locs:
         
         dist = distmap[y, x][0] + heatmap[yn, xn]
         if distmap[yn, xn] is not None:
-            dist_before, dy_before, dx_before = distmap[yn, xn]
-            if dist >= dist_before and dy_before == dy and dx_before == dx:
+            dist_before, cy_before, cx_before = distmap[yn, xn]
+            if dist >= dist_before:
                 continue
 
-        distmap[yn, xn] = (dist, dy, dx)
+        distmap[yn, xn] = (dist, cy, cx)
 
         if cy:
             new_locs += [(yn, xn, 0, 1), (yn, xn, 0, -1)]
-            if cy > 0 and cy < 3:
+            if 0 < cy < 3:
                 new_locs += [(yn, xn, cy+1, 0)]
-            elif cy < 0 and cy > -3:
+            elif 0 > cy > -3:
                 new_locs += [(yn, xn, cy-1, 0)]
                 
         elif cx:

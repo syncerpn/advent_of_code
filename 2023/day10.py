@@ -247,25 +247,3 @@ print(max_dist)
 vert_map, horz_map = pipe_network.scanning_one_direction(pipe_network.stloc)
 import numpy as np
 vert_map, horz_map = np.array(vert_map), np.array(horz_map)
-
-io_map = np.zeros((pipe_network.h, pipe_network.w))
-
-def winding_check(point, vert_map, horz_map):
-    hi, wi = point
-    if horz_map[0:hi, wi].sum() == 0:
-        return 1
-    if horz_map[hi+1:, wi].sum() == 0:
-        return 1
-    if vert_map[hi, 0:wi].sum() == 0:
-        return 1
-    if vert_map[hi, wi+1:].sum() == 0:
-        return 1
-    return -1
-
-for hi in range(pipe_network.h):
-    for wi in range(pipe_network.w):
-        if vert_map[hi, wi] != 0 or horz_map[hi, wi] != 0:
-            continue
-        io_map[hi, wi] = winding_check((hi, wi), vert_map, horz_map)
-
-print(np.int32(io_map == -1).sum())

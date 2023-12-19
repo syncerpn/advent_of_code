@@ -20,14 +20,26 @@ def tadd(a, b):
 def tmul(a, b):
     return (a[0] * b[0], a[1] * b[1])
 
-def get_points_in_edges(edges):
+def tuple_range(ta, tb):
+    min_y = min(ta[0], tb[0])
+    max_y = max(ta[0], tb[0])
+    min_x = min(ta[1], tb[1])
+    max_x = max(ta[1], tb[1])
+    
+    return [(yi, xi) for yi in range(min_y, max_y+1) for xi in range(min_x, max_x+1)]
+
+def get_points_in_edges(edges, dip, di):
     loc, span_a, span_b = edges
     
-    h, w = tadd(span_a, span_b)
-    y, x = min(loc[0], loc[0]+h), min(loc[1], loc[1]+w)
-    h, w = abs(h), abs(w)
+    offs_a = tmul(directions[dir_s.index(dip)], (-1,-1))
+    offs_b = directions[dir_s.index(di)]
     
-    points = [(yi, xi) for xi in range(x, x+w+1) for yi in range(y, y+h+1)]
+    
+    point_a = [tadd(t, offs_b) for t in tuple_range(loc, tadd(loc, span_a))]
+    loc = tadd(loc, span_a)
+    point_b = [tadd(t, offs_a) for t in tuple_range(loc, tadd(loc, span_b))]
+    
+    points = list(set(point_a+point_b))
     return points
 
 def neighbor(point, neighbor_map):
@@ -55,8 +67,8 @@ def neighbor(point, neighbor_map):
 inout_map = {"UR": "W", "RD": "W", "DL": "W", "LU": "W",
              "RU": "C", "DR": "C", "LD": "C", "UL": "C",}
 
-dir_s = "UDLR"
-directions = [(-1,0), (1,0), (0,-1), (0,1)]
+dir_s = "RDLU"
+directions = [(0,1), (1,0), (0,-1), (-1,0)]
 
 winding = ""
 winding_counter = 0
@@ -105,7 +117,7 @@ for d in data + [data[0]]:
             winding_counter += 1
         else:
             winding_counter -= 1
-        point = get_points_in_edges(edges)
+        point = get_points_in_edges(edges, di_prev, di)
         for p in point:
             shape_dict["point"][p] = g
         
@@ -149,8 +161,4 @@ count = winding_map == "E"
 count += winding_map == "W" if winding_counter > 0 else winding_map == "C"
 print(np.sum(count))
 
-import matplotlib.pyplot as plt
-img_map = np.zeros((h, w), dtype=np.uint8)
-img_map[winding_map == "W"] = 255
-img_map[winding_map == "E"] = 128
-plt.imshow(img_map)
+#part2
